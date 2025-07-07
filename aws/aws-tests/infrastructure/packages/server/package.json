@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "nodemon dev-server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.610.0"
+  }
+}

@@ -1,0 +1,28 @@
+version: "3.1"
+services:
+  dynamodb:
+    container_name: dynamodb
+    image: amazon/dynamodb-local
+    volumes:
+      - ./data/dynamodb:/dynamodb_local_db
+    ports:
+      - "8000:8000"
+  server:
+    image: "node:8"
+    #user: node
+    working_dir: /home/node/server
+    environment:
+      DYNAMO_ENDPOINT: http://dynamo:8000
+      # Note: even though these keys are garbage values, access key and
+      # secret key are still required. Otherwise, `aws-sdk` will attempt
+      # to read credentials from Amazon's `169.254.169.254` service and
+      # fail.
+      AWS_ACCESS_KEY_ID: "abc"
+      AWS_SECRET_ACCESS_KEY: "xyz"
+    depends_on:
+      - dynamodb
+    links:
+      - "dynamodb:dynamodb"
+    volumes:
+      - ./packages:/home/node
+    command: yarn dev

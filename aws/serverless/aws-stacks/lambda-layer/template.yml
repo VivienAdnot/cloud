@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Example template for an HTTP API that creates, updates, and deletes items in DynamoDB
+  
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  MyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.handler
+      Runtime: nodejs12.x
+      Layers:
+        - !Ref ExternalLibsLayer
+      Events:
+        GetAnItem:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: GET
+
+  # Lambda Layer
+  ExternalLibsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub poc-external-layer
+      ContentUri: layers/extlibs
+      CompatibleRuntimes:
+        - nodejs12.x
+      RetentionPolicy: Retain
+
+Outputs:
+  ApiEndpoint:
+    Description: "The invoke URL for our HTTP API"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  Function:
+    Description: "handler function ARN"
+    Value: !GetAtt MyFunction.Arn

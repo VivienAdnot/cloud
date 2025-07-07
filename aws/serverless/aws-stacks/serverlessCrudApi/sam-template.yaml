@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Serverless Crud Api
+
+Globals:
+  Function:
+    Timeout: 10
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref CrudDB
+
+Resources:
+  CrudCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CrudCreateFunction
+      Handler: crud.createOrUpdate
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CrudDB
+      Events:
+        CreateOrUpdateItem:
+          # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
+          Properties:
+            Path: /items
+            Method: PUT
+
+  CrudGetAllFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CrudGetAllFunction
+      Handler: crud.getAll
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CrudDB
+      Events:
+        GetAllItems:
+          # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
+          Properties:
+            Path: /items
+            Method: GET
+
+  CrudGetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CrudGetFunction
+      Handler: crud.getById
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CrudDB
+      Events:
+        GetItemById:
+          # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
+          Properties:
+            Path: /items/{id}
+            Method: GET
+
+  CrudDeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CrudDeleteFunction
+      Handler: crud.deleteById
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CrudDB
+      Events:
+        DeleteItemById:
+          # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
+          Properties:
+            Path: /items/{id}
+            Method: DELETE
+
+  CrudDB:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: CrudDB
+      PrimaryKey:
+        Name: id
+        Type: String
+
+Outputs:
+  ApiEndpoint:
+    Description: "The invoke URL for our HTTP API"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/items"

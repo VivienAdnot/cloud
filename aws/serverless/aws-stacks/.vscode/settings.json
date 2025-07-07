@@ -1,0 +1,11 @@
+{
+  "eslint.enable": true,
+  "editor.tabSize": 2,
+  "plantuml.exportFormat": "svg",
+  "plantuml.exportInPlace": true,
+  "plantuml.previewFromUrlServer": true,
+  "plantuml.exportSubFolder": false,
+  "plantuml.exportOutDir": ".",
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.server": "https://www.plantuml.com/plantuml"
+}
